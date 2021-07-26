@@ -1,0 +1,11 @@
+<resources>
+    <string name="search_image_screen_title">Search Images</string>
+    <string name="image_details_screen_title">Image Details</string>
+    <string name="image_details_name">Name</string>
+    <string name="image_details_title">Title</string>
+    <string name="image_details_web_search_url">Web Search Url</string>
+    <string name="image_details_web_page_url">Web Page Url</string>
+
+    <!-- Animations -->
+    <string name="image_transition_poster">imagePosterTransition</string>
+</resources>
