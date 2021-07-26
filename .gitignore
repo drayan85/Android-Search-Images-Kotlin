@@ -1,0 +1,24 @@
+# Gradle
+.gradle
+/build
+buildout
+out
+/captures
+
+# Other
+.DS_Store
+dist
+tmp
+local.properties
+
+# IntelliJ IDEA
+.idea
+*.iml
+*.ipr
+*.iws
+classes
+gen-external-apklibs
+
+
+.externalNativeBuild
+.cxx
