@@ -34,5 +34,6 @@ class RouteActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         navigator.showMain(this)
+        finish()
     }
 }
