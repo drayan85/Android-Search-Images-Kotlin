@@ -21,7 +21,6 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.search.images.data.database.entity.IImageModel
 import com.search.images.data.database.entity.ImageModelEntity
-import io.reactivex.Maybe
 
 /**
  * @author Paramanathan Ilanthirayan <theebankala@gmail.com>
