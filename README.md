@@ -37,7 +37,7 @@ Basic layers overview
 - Modular approch followed
 - It is heavily implemented by following standard clean architecture principle.
 - Unit testing written for domain and data layers.
-- Offline capability in progress.
+- Offline capability added (v1.0.1).
 - [S.O.L.I.D](https://en.wikipedia.org/wiki/SOLID) priciple followed for more understandable, flexible and maintainable.
 
 App layers/module:
