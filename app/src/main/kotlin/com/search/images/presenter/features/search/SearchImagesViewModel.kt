@@ -62,7 +62,7 @@ open class SearchImagesViewModel
         mTotalItemCount = imageSearchResponse.totalCount
         _images.value = imageSearchResponse.value.map {
             ImageModelParcelable(
-                it.url,
+                it!!.url,
                 it.height,
                 it.width,
                 it.thumbnail,

@@ -20,12 +20,30 @@ package com.search.images.domain.model
  * @version 1.0.0
  * @since 24th of July 2021
  */
-data class ImageSearchResponse(val _type: String, val totalCount: Int, val value: Array<ImageModel>) {
-
-
+data class ImageSearchResponse(var _type: String, val totalCount: Int, val value: Array<ImageModel?>){
 
     companion object {
         val empty = ImageSearchResponse("", 0, arrayOf())
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as ImageSearchResponse
+
+        if (_type != other._type) return false
+        if (totalCount != other.totalCount) return false
+        if (!value.contentEquals(other.value)) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = _type.hashCode()
+        result = 31 * result + totalCount
+        result = 31 * result + value.contentHashCode()
+        return result
     }
 
 

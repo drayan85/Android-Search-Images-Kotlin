@@ -16,10 +16,18 @@
 
 package com.search.images.data.source.search.image.local
 
+import com.google.gson.Gson
 import com.search.images.data.database.AppDataBase
+import com.search.images.data.database.entity.ImageModelEntity
 import com.search.images.data.source.search.image.SearchImageDataSource
+import com.search.images.domain.exception.Failure
+import com.search.images.domain.functional.Either
+import com.search.images.domain.model.ImageModel
 import com.search.images.domain.model.ImageSearchResponse
-import retrofit2.Call
+import com.search.images.domain.model.Provider
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 /**
@@ -27,11 +35,57 @@ import javax.inject.Inject
  * @version 1.0.0
  * @since 24th of July 2021
  */
-class DiskSearchImageDataSource @Inject constructor(val appDataBase: AppDataBase):
+class DiskSearchImageDataSource @Inject constructor(private val appDataBase: AppDataBase):
     SearchImageDataSource {
 
 
-    override fun searchImages(query: String, page: Int, perSize: Int): Call<ImageSearchResponse> {
-        TODO("Not yet implemented")
+    override fun searchImages(query: String, page: Int, perSize: Int): Either<Failure, ImageSearchResponse> {
+        return runBlocking {Either.Right(getSearchImagesBasedOnQuery(query, page, perSize))}
+    }
+
+    private suspend fun getSearchImagesBasedOnQuery (query: String, page: Int, perSize: Int) =
+        withContext(Dispatchers.IO) {
+            val offset: Int = (page - 1) * perSize
+            val total: Int = appDataBase.searchImageDao.getTotalNumberOfItemsForGivenSearchQuery(query)
+            val imageModelEntities: Array<ImageModelEntity> = appDataBase.searchImageDao.getPaginatedImagesBasedOnQuery(perSize, offset, query)
+            val imageModels: Array<ImageModel?> = arrayOfNulls(perSize)
+            var index = 0
+            val gson = Gson()
+            for (entity in imageModelEntities) {
+                imageModels[index++] = ImageModel(
+                    entity.url,
+                    entity.height,
+                    entity.width,
+                    entity.thumbnail,
+                    entity.thumbnailHeight,
+                    entity.thumbnailWidth,
+                    entity.name,
+                    entity.title,
+                    gson.fromJson(entity.provider, Provider::class.java),
+                    entity.imageWebSearchUrl,
+                    entity.webpageUrl)
+            }
+            ImageSearchResponse("_images", total, imageModels)
+        }
+
+    override fun insertImageModelEntity(value: Array<ImageModel?>) {
+        runBlocking {
+            val gson = Gson()
+            for (imageModel in value) {
+                appDataBase.searchImageDao.insertImageModelEntities(ImageModelEntity(
+                    imageModel!!.url,
+                    imageModel.height,
+                    imageModel.width,
+                    imageModel.thumbnail,
+                    imageModel.thumbnailHeight,
+                    imageModel.thumbnailWidth,
+                    imageModel.name,
+                    imageModel.title,
+                    gson.toJson(imageModel.provider),
+                    imageModel.imageWebSearchUrl,
+                    imageModel.webpageUrl
+                ))
+            }
+        }
     }
 }

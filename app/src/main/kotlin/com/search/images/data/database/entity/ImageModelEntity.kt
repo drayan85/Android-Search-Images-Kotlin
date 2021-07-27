@@ -35,7 +35,7 @@ data class ImageModelEntity(
     var thumbnailHeight: Int,
     var thumbnailWidth: Int,
     var name: String,
-    var title: String?,
+    var title: String,
     var provider: String,
     var imageWebSearchUrl: String,
     var webpageUrl: String) {

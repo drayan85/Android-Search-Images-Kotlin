@@ -16,6 +16,11 @@
 package com.search.images.data.database.dao
 
 import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import com.search.images.data.database.entity.IImageModel
+import com.search.images.data.database.entity.ImageModelEntity
 
 /**
  * @author Paramanathan Ilanthirayan <theebankala@gmail.com>
@@ -23,5 +28,14 @@ import androidx.room.Dao
  * @since 24th of July 2021
  */
 @Dao
-interface SearchImageDao {
+abstract class SearchImageDao {
+
+    @Query("SELECT * FROM tbl_image WHERE " + IImageModel.Columns.TITLE + " LIKE '%' || :query || '%'" + " LIMIT :per_page OFFSET :offSet")
+    abstract suspend fun getPaginatedImagesBasedOnQuery(per_page: Int, offSet: Int, query: String): Array<ImageModelEntity>
+
+    @Query("SELECT COUNT(*) FROM tbl_image WHERE " + IImageModel.Columns.TITLE + " LIKE '%' || :query || '%'")
+    abstract suspend fun getTotalNumberOfItemsForGivenSearchQuery(query: String): Int
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    abstract suspend fun insertImageModelEntities(vararg entity: ImageModelEntity)
 }
