@@ -15,8 +15,10 @@
  */
 package com.search.images.data.source.search.image
 
+import com.search.images.domain.exception.Failure
+import com.search.images.domain.functional.Either
+import com.search.images.domain.model.ImageModel
 import com.search.images.domain.model.ImageSearchResponse
-import retrofit2.Call
 
 /**
  * @author Paramanathan Ilanthirayan <theebankala@gmail.com>
@@ -25,5 +27,7 @@ import retrofit2.Call
  */
 interface SearchImageDataSource {
 
-    fun searchImages(query: String, page: Int, perSize: Int) : Call<ImageSearchResponse>
+    fun searchImages(query: String, page: Int, perSize: Int) : Either<Failure, ImageSearchResponse>
+
+    fun insertImageModelEntity(value: Array<ImageModel?>)
 }

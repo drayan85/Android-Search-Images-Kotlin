@@ -19,6 +19,9 @@ import com.search.images.BuildConfig
 import com.search.images.data.api.SearchImageApi
 import com.search.images.data.source.Remote
 import com.search.images.data.source.search.image.SearchImageDataSource
+import com.search.images.domain.exception.Failure
+import com.search.images.domain.functional.Either
+import com.search.images.domain.model.ImageModel
 import com.search.images.domain.model.ImageSearchResponse
 import retrofit2.Call
 import retrofit2.Retrofit
@@ -34,10 +37,29 @@ class RemoteSearchImageDataSource @Inject constructor(retrofit: Retrofit): Searc
 
     private val searchImageApi: SearchImageApi = retrofit.create(SearchImageApi::class.java)
 
-
-    override fun searchImages(query: String, page: Int, perSize: Int): Call<ImageSearchResponse> {
-        return searchImageApi.searchImages(
+    override fun searchImages(query: String, page: Int, perSize: Int): Either<Failure, ImageSearchResponse> {
+        return request(searchImageApi.searchImages(
             BuildConfig.RAPID_API_HOST, BuildConfig.API_KEY, query, page, perSize,
-            autoCorrect = true, safeSearch = false)
+            autoCorrect = true, safeSearch = false), {
+            it
+        }, ImageSearchResponse.empty)
     }
+
+    override fun insertImageModelEntity(value: Array<ImageModel?>) {
+        TODO("No need to implement only need to implement in the DiskDataSource")
+    }
+
+    private fun <T, R> request(call: Call<T>, transform: (T) -> R, default: T): Either<Failure, R> {
+        return try {
+            val response = call.execute()
+            when (response.isSuccessful) {
+                true -> Either.Right(transform((response.body() ?: default)))
+                false -> Either.Left(Failure.ServerError)
+            }
+        } catch (exception: Throwable) {
+            Either.Left(Failure.ServerError)
+        }
+    }
+
+
 }
